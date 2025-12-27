@@ -11,15 +11,18 @@ import {
   DollarSign,
   Plane,
   Calendar,
-  BarChart3,
 } from "lucide-react"
 import { useEffect, useState } from "react"
+import { useTranslations } from 'next-intl'
 
 interface SidebarProps {
   role?: string
+  isMobileOpen?: boolean
+  onMobileClose?: () => void
 }
 
-export function Sidebar({ role }: SidebarProps) {
+export function Sidebar({ role, isMobileOpen, onMobileClose }: SidebarProps) {
+  const t = useTranslations('nav')
   const pathname = usePathname()
   const [userRole, setUserRole] = useState<string>(role || "")
 
@@ -36,17 +39,17 @@ export function Sidebar({ role }: SidebarProps) {
   const adminLinks = [
     {
       href: "/admin",
-      label: "Dashboard",
+      label: t('dashboard'),
       icon: LayoutDashboard,
     },
     {
       href: "/admin/users",
-      label: "Users",
+      label: t('users'),
       icon: Users,
     },
     {
       href: "/admin/entries",
-      label: "Entries",
+      label: t('entries'),
       icon: FileText,
     },
   ]
@@ -54,27 +57,27 @@ export function Sidebar({ role }: SidebarProps) {
   const userLinks = [
     {
       href: "/dashboard",
-      label: "Dashboard",
+      label: t('dashboard'),
       icon: LayoutDashboard,
     },
     {
       href: "/dashboard/hours",
-      label: "Work Hours",
+      label: t('workHours'),
       icon: Clock,
     },
     {
       href: "/dashboard/expenses",
-      label: "Expenses",
+      label: t('expenses'),
       icon: DollarSign,
     },
     {
       href: "/dashboard/vacation",
-      label: "Vacation",
+      label: t('vacation'),
       icon: Calendar,
     },
     {
       href: "/dashboard/travel",
-      label: "Travel",
+      label: t('travel'),
       icon: Plane,
     },
   ]
@@ -107,4 +110,3 @@ export function Sidebar({ role }: SidebarProps) {
     </aside>
   )
 }
-

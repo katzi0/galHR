@@ -4,6 +4,8 @@ import { useEffect, useState, useCallback } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Users, Clock, DollarSign, FileCheck, AlertCircle } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
+import { isMockMode, getMockStats } from "@/lib/mock-data"
+import { useTranslations } from 'next-intl'
 
 interface Stats {
   users: {
@@ -23,6 +25,7 @@ interface Stats {
 }
 
 export function StatsCards() {
+  const t = useTranslations()
   const [stats, setStats] = useState<Stats | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const { toast } = useToast()
@@ -30,6 +33,15 @@ export function StatsCards() {
   const fetchStats = useCallback(async () => {
     setIsLoading(true)
     try {
+      // Check if mock mode is enabled
+      if (isMockMode()) {
+        // Use mock data
+        await new Promise(resolve => setTimeout(resolve, 300)) // Simulate loading
+        setStats(getMockStats())
+        setIsLoading(false)
+        return
+      }
+
       const token = localStorage.getItem("token")
       if (!token) {
         throw new Error("Not authenticated")
@@ -50,21 +62,21 @@ export function StatsCards() {
       setStats(result)
     } catch (error: any) {
       toast({
-        title: "Error",
+        title: t('common.error'),
         description: error.message || "Failed to fetch statistics",
         variant: "destructive",
       })
     } finally {
       setIsLoading(false)
     }
-  }, [toast])
+  }, [toast, t])
 
   useEffect(() => {
     fetchStats()
   }, [fetchStats])
 
   if (isLoading) {
-    return <div className="text-center py-8">Loading statistics...</div>
+    return <div className="text-center py-8">{t('common.loading')}</div>
   }
 
   if (!stats) {
@@ -75,7 +87,7 @@ export function StatsCards() {
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Total Users</CardTitle>
+          <CardTitle className="text-sm font-medium">{t('admin.totalUsers')}</CardTitle>
           <Users className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
@@ -89,7 +101,7 @@ export function StatsCards() {
 
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Pending Entries</CardTitle>
+          <CardTitle className="text-sm font-medium">{t('admin.pendingEntries')}</CardTitle>
           <AlertCircle className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
@@ -103,7 +115,7 @@ export function StatsCards() {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">
-            Hours This Month
+            {t('hours.title')} {t('admin.thisMonth')}
           </CardTitle>
           <Clock className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
@@ -120,7 +132,7 @@ export function StatsCards() {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">
-            Expenses This Month
+            {t('expenses.title')} {t('admin.thisMonth')}
           </CardTitle>
           <DollarSign className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
@@ -137,7 +149,7 @@ export function StatsCards() {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">
-            Approved This Month
+            {t('admin.approvedEntries')} {t('admin.thisMonth')}
           </CardTitle>
           <FileCheck className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
@@ -153,4 +165,3 @@ export function StatsCards() {
     </div>
   )
 }
-

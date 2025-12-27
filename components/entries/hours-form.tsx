@@ -25,12 +25,14 @@ import { CalendarIcon } from "lucide-react"
 import { format } from "date-fns"
 import { cn } from "@/lib/utils"
 import { useToast } from "@/hooks/use-toast"
+import { useTranslations } from 'next-intl'
 
 interface HoursFormProps {
   onSuccess?: () => void
 }
 
 export function HoursForm({ onSuccess }: HoursFormProps) {
+  const t = useTranslations()
   const [isLoading, setIsLoading] = useState(false)
   const { toast } = useToast()
 
@@ -67,7 +69,7 @@ export function HoursForm({ onSuccess }: HoursFormProps) {
       }
 
       toast({
-        title: "Success",
+        title: t('common.success'),
         description: "Work hours submitted successfully",
       })
 
@@ -75,7 +77,7 @@ export function HoursForm({ onSuccess }: HoursFormProps) {
       onSuccess?.()
     } catch (error: any) {
       toast({
-        title: "Error",
+        title: t('common.error'),
         description: error.message || "Failed to submit hours",
         variant: "destructive",
       })
@@ -86,13 +88,13 @@ export function HoursForm({ onSuccess }: HoursFormProps) {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 sm:space-y-6">
         <FormField
           control={form.control}
           name="date"
           render={({ field }) => (
             <FormItem className="flex flex-col">
-              <FormLabel>Date</FormLabel>
+              <FormLabel>{t('hours.date')}</FormLabel>
               <Popover>
                 <PopoverTrigger asChild>
                   <FormControl>
@@ -133,12 +135,12 @@ export function HoursForm({ onSuccess }: HoursFormProps) {
           name="hoursWorked"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Hours Worked</FormLabel>
+              <FormLabel>{t('hours.hours')}</FormLabel>
               <FormControl>
                 <Input
                   type="number"
                   step="0.5"
-                  placeholder="8"
+                  placeholder={t('hours.hoursPlaceholder')}
                   {...field}
                   onChange={(e) => field.onChange(parseFloat(e.target.value))}
                 />
@@ -152,10 +154,10 @@ export function HoursForm({ onSuccess }: HoursFormProps) {
           name="description"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Description (Optional)</FormLabel>
+              <FormLabel>{t('hours.description')} (Optional)</FormLabel>
               <FormControl>
                 <Textarea
-                  placeholder="Describe your work..."
+                  placeholder={t('hours.descriptionPlaceholder')}
                   {...field}
                 />
               </FormControl>
@@ -164,10 +166,9 @@ export function HoursForm({ onSuccess }: HoursFormProps) {
           )}
         />
         <Button type="submit" className="w-full" disabled={isLoading}>
-          {isLoading ? "Submitting..." : "Submit Hours"}
+          {isLoading ? t('common.loading') : t('common.submit')}
         </Button>
       </form>
     </Form>
   )
 }
-

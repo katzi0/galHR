@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Check, X } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
+import { isMockMode, getMockEntries } from "@/lib/mock-data"
 
 interface Entry {
   id: string
@@ -51,6 +52,18 @@ export function EntryTable() {
   const fetchEntries = useCallback(async (status?: string) => {
     setIsLoading(true)
     try {
+      // Check if mock mode is enabled
+      if (isMockMode()) {
+        // Use mock data
+        await new Promise(resolve => setTimeout(resolve, 300)) // Simulate loading
+        const mockEntries = getMockEntries({ 
+          status: status && status !== "all" ? status : undefined 
+        })
+        setEntries(mockEntries)
+        setIsLoading(false)
+        return
+      }
+
       const token = localStorage.getItem("token")
       if (!token) {
         throw new Error("Not authenticated")
@@ -87,6 +100,18 @@ export function EntryTable() {
 
   async function updateEntryStatus(entryId: string, status: "APPROVED" | "REJECTED") {
     try {
+      // Check if mock mode is enabled
+      if (isMockMode()) {
+        // Simulate update in mock mode
+        await new Promise(resolve => setTimeout(resolve, 300))
+        toast({
+          title: "Success (Demo Mode)",
+          description: `Entry ${status.toLowerCase()} successfully (demo only)`,
+        })
+        fetchEntries(activeTab === "all" ? undefined : activeTab)
+        return
+      }
+
       const token = localStorage.getItem("token")
       if (!token) {
         throw new Error("Not authenticated")
@@ -156,7 +181,7 @@ export function EntryTable() {
 
   return (
     <Tabs value={activeTab} onValueChange={setActiveTab}>
-      <TabsList>
+      <TabsList className="grid w-full grid-cols-4 lg:w-auto lg:inline-flex">
         <TabsTrigger value="all">All</TabsTrigger>
         <TabsTrigger value="pending">Pending</TabsTrigger>
         <TabsTrigger value="approved">Approved</TabsTrigger>
@@ -168,62 +193,70 @@ export function EntryTable() {
             No entries found
           </div>
         ) : (
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Type</TableHead>
-                <TableHead>Employee</TableHead>
-                <TableHead>Details</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Submitted</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {entries.map((entry) => (
-                <TableRow key={entry.id}>
-                  <TableCell className="font-medium">
-                    {entry.type.replace("_", " ")}
-                  </TableCell>
-                  <TableCell>
-                    <div>
-                      <div className="font-medium">{entry.user.name}</div>
-                      <div className="text-sm text-muted-foreground">
-                        {entry.user.department || entry.user.role}
-                      </div>
-                    </div>
-                  </TableCell>
-                  <TableCell>{getEntryDetails(entry)}</TableCell>
-                  <TableCell>{getStatusBadge(entry.status)}</TableCell>
-                  <TableCell>
-                    {format(new Date(entry.createdAt), "PPP")}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    {entry.status === "PENDING" && (
-                      <div className="flex justify-end gap-2">
-                        <Button
-                          size="sm"
-                          variant="default"
-                          onClick={() => updateEntryStatus(entry.id, "APPROVED")}
-                        >
-                          <Check className="h-4 w-4 mr-1" />
-                          Approve
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="destructive"
-                          onClick={() => updateEntryStatus(entry.id, "REJECTED")}
-                        >
-                          <X className="h-4 w-4 mr-1" />
-                          Reject
-                        </Button>
-                      </div>
-                    )}
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+          <div className="overflow-x-auto -mx-4 sm:mx-0">
+            <div className="inline-block min-w-full align-middle">
+              <div className="overflow-hidden">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="whitespace-nowrap">Type</TableHead>
+                      <TableHead className="whitespace-nowrap">Employee</TableHead>
+                      <TableHead className="min-w-[200px]">Details</TableHead>
+                      <TableHead className="whitespace-nowrap">Status</TableHead>
+                      <TableHead className="whitespace-nowrap hidden sm:table-cell">Submitted</TableHead>
+                      <TableHead className="text-right whitespace-nowrap">Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {entries.map((entry) => (
+                      <TableRow key={entry.id}>
+                        <TableCell className="font-medium whitespace-nowrap">
+                          {entry.type.replace("_", " ")}
+                        </TableCell>
+                        <TableCell className="whitespace-nowrap">
+                          <div>
+                            <div className="font-medium">{entry.user.name}</div>
+                            <div className="text-sm text-muted-foreground">
+                              {entry.user.department || entry.user.role}
+                            </div>
+                          </div>
+                        </TableCell>
+                        <TableCell className="max-w-[250px] truncate">{getEntryDetails(entry)}</TableCell>
+                        <TableCell>{getStatusBadge(entry.status)}</TableCell>
+                        <TableCell className="whitespace-nowrap hidden sm:table-cell">
+                          {format(new Date(entry.createdAt), "PPP")}
+                        </TableCell>
+                        <TableCell className="text-right">
+                          {entry.status === "PENDING" && (
+                            <div className="flex justify-end gap-2">
+                              <Button
+                                size="sm"
+                                variant="default"
+                                onClick={() => updateEntryStatus(entry.id, "APPROVED")}
+                                className="whitespace-nowrap"
+                              >
+                                <Check className="h-4 w-4 sm:mr-1" />
+                                <span className="hidden sm:inline">Approve</span>
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="destructive"
+                                onClick={() => updateEntryStatus(entry.id, "REJECTED")}
+                                className="whitespace-nowrap"
+                              >
+                                <X className="h-4 w-4 sm:mr-1" />
+                                <span className="hidden sm:inline">Reject</span>
+                              </Button>
+                            </div>
+                          )}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            </div>
+          </div>
         )}
       </TabsContent>
     </Tabs>

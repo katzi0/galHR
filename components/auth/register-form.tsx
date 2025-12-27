@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { useRouter } from "next/navigation"
+import { useRouter } from "@/navigation"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { registerSchema, type RegisterInput } from "@/lib/validations"
@@ -23,8 +23,10 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { useToast } from "@/hooks/use-toast"
+import { useTranslations } from 'next-intl'
 
 export function RegisterForm() {
+  const t = useTranslations()
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
   const { toast } = useToast()
@@ -55,19 +57,19 @@ export function RegisterForm() {
       const result = await response.json()
 
       if (!response.ok) {
-        throw new Error(result.error || "Registration failed")
+        throw new Error(result.error || t('auth.registerError'))
       }
 
       toast({
-        title: "Success",
-        description: "Account created successfully. Please login.",
+        title: t('common.success'),
+        description: t('auth.registerSuccess'),
       })
 
       router.push("/login")
     } catch (error: any) {
       toast({
-        title: "Error",
-        description: error.message || "Failed to register",
+        title: t('common.error'),
+        description: error.message || t('auth.registerError'),
         variant: "destructive",
       })
     } finally {
@@ -77,15 +79,15 @@ export function RegisterForm() {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 sm:space-y-6">
         <FormField
           control={form.control}
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Full Name</FormLabel>
+              <FormLabel>{t('auth.name')}</FormLabel>
               <FormControl>
-                <Input placeholder="John Doe" {...field} />
+                <Input placeholder={t('auth.namePlaceholder')} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -96,11 +98,11 @@ export function RegisterForm() {
           name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Email</FormLabel>
+              <FormLabel>{t('auth.email')}</FormLabel>
               <FormControl>
                 <Input
                   type="email"
-                  placeholder="your.email@example.com"
+                  placeholder={t('auth.emailPlaceholder')}
                   {...field}
                 />
               </FormControl>
@@ -113,9 +115,9 @@ export function RegisterForm() {
           name="password"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Password</FormLabel>
+              <FormLabel>{t('auth.password')}</FormLabel>
               <FormControl>
-                <Input type="password" placeholder="••••••••" {...field} />
+                <Input type="password" placeholder={t('auth.passwordPlaceholder')} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -126,11 +128,11 @@ export function RegisterForm() {
           name="role"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Role</FormLabel>
+              <FormLabel>{t('admin.role')}</FormLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select a role" />
+                    <SelectValue placeholder={t('forms.selectOption')} />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
@@ -170,10 +172,9 @@ export function RegisterForm() {
           )}
         />
         <Button type="submit" className="w-full" disabled={isLoading}>
-          {isLoading ? "Creating account..." : "Register"}
+          {isLoading ? t('auth.registering') : t('auth.register')}
         </Button>
       </form>
     </Form>
   )
 }
-

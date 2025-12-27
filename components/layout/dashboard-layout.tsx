@@ -15,6 +15,7 @@ export function DashboardLayout({ children, requireAdmin = false }: DashboardLay
   const pathname = usePathname()
   const [isLoading, setIsLoading] = useState(true)
   const [userRole, setUserRole] = useState<string>("")
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
   useEffect(() => {
     // Check authentication
@@ -38,6 +39,11 @@ export function DashboardLayout({ children, requireAdmin = false }: DashboardLay
     setIsLoading(false)
   }, [router, requireAdmin])
 
+  // Close mobile menu when route changes
+  useEffect(() => {
+    setIsMobileMenuOpen(false)
+  }, [pathname])
+
   if (isLoading) {
     return (
       <div className="flex h-screen items-center justify-center">
@@ -50,10 +56,14 @@ export function DashboardLayout({ children, requireAdmin = false }: DashboardLay
 
   return (
     <div className="flex h-screen flex-col">
-      <Navbar />
+      <Navbar onMenuClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} />
       <div className="flex flex-1 overflow-hidden">
-        <Sidebar role={userRole} />
-        <main className="flex-1 overflow-y-auto p-6">{children}</main>
+        <Sidebar 
+          role={userRole} 
+          isMobileOpen={isMobileMenuOpen}
+          onMobileClose={() => setIsMobileMenuOpen(false)}
+        />
+        <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">{children}</main>
       </div>
     </div>
   )

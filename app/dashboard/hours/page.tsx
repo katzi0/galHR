@@ -9,15 +9,15 @@ export default function HoursPage() {
   const [refreshKey, setRefreshKey] = useState(0)
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       <div>
-        <h1 className="text-3xl font-bold">Work Hours</h1>
-        <p className="text-muted-foreground">
+        <h1 className="text-2xl font-bold sm:text-3xl">Work Hours</h1>
+        <p className="text-sm text-muted-foreground sm:text-base">
           Submit your work hours and view your submissions
         </p>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-2">
+      <div className="grid gap-4 sm:gap-6 lg:grid-cols-2">
         <Card>
           <CardHeader>
             <CardTitle>Submit Hours</CardTitle>

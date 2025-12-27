@@ -13,6 +13,7 @@ import {
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useToast } from "@/hooks/use-toast"
+import { isMockMode, getMockEntries } from "@/lib/mock-data"
 
 interface Entry {
   id: string
@@ -42,6 +43,22 @@ export function EntryList() {
   const fetchEntries = useCallback(async (type?: string) => {
     setIsLoading(true)
     try {
+      // Check if mock mode is enabled
+      if (isMockMode()) {
+        // Use mock data
+        await new Promise(resolve => setTimeout(resolve, 300)) // Simulate loading
+        let entryType = 'WORK_HOURS'
+        if (type === "expenses") entryType = 'EXPENSE'
+        else if (type === "vacation") entryType = 'VACATION'
+        else if (type === "travel") entryType = 'TRAVEL'
+        
+        const mockEntries = getMockEntries({ type: entryType })
+        // Filter to show only a subset for the current "user"
+        setEntries(mockEntries.slice(0, 5))
+        setIsLoading(false)
+        return
+      }
+
       const token = localStorage.getItem("token")
       if (!token) {
         throw new Error("Not authenticated")
@@ -116,7 +133,7 @@ export function EntryList() {
 
   return (
     <Tabs value={activeTab} onValueChange={setActiveTab}>
-      <TabsList>
+      <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 lg:w-auto lg:inline-flex">
         <TabsTrigger value="hours">Hours</TabsTrigger>
         <TabsTrigger value="expenses">Expenses</TabsTrigger>
         <TabsTrigger value="vacation">Vacation</TabsTrigger>
@@ -128,30 +145,36 @@ export function EntryList() {
             No entries found
           </div>
         ) : (
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Type</TableHead>
-                <TableHead>Details</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Submitted</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {entries.map((entry) => (
-                <TableRow key={entry.id}>
-                  <TableCell className="font-medium">
-                    {entry.type.replace("_", " ")}
-                  </TableCell>
-                  <TableCell>{getEntryDetails(entry)}</TableCell>
-                  <TableCell>{getStatusBadge(entry.status)}</TableCell>
-                  <TableCell>
-                    {format(new Date(entry.createdAt), "PPP")}
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+          <div className="overflow-x-auto -mx-4 sm:mx-0">
+            <div className="inline-block min-w-full align-middle">
+              <div className="overflow-hidden">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="whitespace-nowrap">Type</TableHead>
+                      <TableHead className="min-w-[200px]">Details</TableHead>
+                      <TableHead className="whitespace-nowrap">Status</TableHead>
+                      <TableHead className="whitespace-nowrap hidden sm:table-cell">Submitted</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {entries.map((entry) => (
+                      <TableRow key={entry.id}>
+                        <TableCell className="font-medium whitespace-nowrap">
+                          {entry.type.replace("_", " ")}
+                        </TableCell>
+                        <TableCell className="max-w-[250px] truncate">{getEntryDetails(entry)}</TableCell>
+                        <TableCell>{getStatusBadge(entry.status)}</TableCell>
+                        <TableCell className="whitespace-nowrap hidden sm:table-cell">
+                          {format(new Date(entry.createdAt), "PPP")}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            </div>
+          </div>
         )}
       </TabsContent>
     </Tabs>

@@ -30,6 +30,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
+import { isMockMode, getMockUsers } from "@/lib/mock-data"
 
 interface User {
   id: string
@@ -53,6 +54,15 @@ export function UserTable() {
   const fetchUsers = useCallback(async () => {
     setIsLoading(true)
     try {
+      // Check if mock mode is enabled
+      if (isMockMode()) {
+        // Use mock data
+        await new Promise(resolve => setTimeout(resolve, 300)) // Simulate loading
+        setUsers(getMockUsers())
+        setIsLoading(false)
+        return
+      }
+
       const token = localStorage.getItem("token")
       if (!token) {
         throw new Error("Not authenticated")
@@ -84,6 +94,19 @@ export function UserTable() {
 
   async function deleteUser(userId: string) {
     try {
+      // Check if mock mode is enabled
+      if (isMockMode()) {
+        // Simulate delete in mock mode
+        await new Promise(resolve => setTimeout(resolve, 300))
+        toast({
+          title: "Success (Demo Mode)",
+          description: "User deleted successfully (demo only)",
+        })
+        fetchUsers()
+        setDeleteUserId(null)
+        return
+      }
+
       const token = localStorage.getItem("token")
       if (!token) {
         throw new Error("Not authenticated")
@@ -138,52 +161,58 @@ export function UserTable() {
 
   return (
     <>
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Name</TableHead>
-            <TableHead>Email</TableHead>
-            <TableHead>Role</TableHead>
-            <TableHead>Department</TableHead>
-            <TableHead>Entries</TableHead>
-            <TableHead>Joined</TableHead>
-            <TableHead className="text-right">Actions</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {users.map((user) => (
-            <TableRow key={user.id}>
-              <TableCell className="font-medium">{user.name}</TableCell>
-              <TableCell>{user.email}</TableCell>
-              <TableCell>{getRoleBadge(user.role)}</TableCell>
-              <TableCell>{user.department || "N/A"}</TableCell>
-              <TableCell>{user._count.entries}</TableCell>
-              <TableCell>{format(new Date(user.createdAt), "PPP")}</TableCell>
-              <TableCell className="text-right">
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="h-8 w-8 p-0">
-                      <MoreHorizontal className="h-4 w-4" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem
-                      className="text-destructive"
-                      onClick={() => setDeleteUserId(user.id)}
-                    >
-                      <Trash2 className="mr-2 h-4 w-4" />
-                      Delete
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+      <div className="overflow-x-auto -mx-4 sm:mx-0">
+        <div className="inline-block min-w-full align-middle">
+          <div className="overflow-hidden">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="whitespace-nowrap">Name</TableHead>
+                  <TableHead className="whitespace-nowrap">Email</TableHead>
+                  <TableHead className="whitespace-nowrap">Role</TableHead>
+                  <TableHead className="whitespace-nowrap hidden md:table-cell">Department</TableHead>
+                  <TableHead className="whitespace-nowrap hidden lg:table-cell">Entries</TableHead>
+                  <TableHead className="whitespace-nowrap hidden lg:table-cell">Joined</TableHead>
+                  <TableHead className="text-right whitespace-nowrap">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {users.map((user) => (
+                  <TableRow key={user.id}>
+                    <TableCell className="font-medium whitespace-nowrap">{user.name}</TableCell>
+                    <TableCell className="whitespace-nowrap">{user.email}</TableCell>
+                    <TableCell>{getRoleBadge(user.role)}</TableCell>
+                    <TableCell className="whitespace-nowrap hidden md:table-cell">{user.department || "N/A"}</TableCell>
+                    <TableCell className="whitespace-nowrap hidden lg:table-cell">{user._count.entries}</TableCell>
+                    <TableCell className="whitespace-nowrap hidden lg:table-cell">{format(new Date(user.createdAt), "PPP")}</TableCell>
+                    <TableCell className="text-right">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" className="h-8 w-8 p-0">
+                            <MoreHorizontal className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem
+                            className="text-destructive"
+                            onClick={() => setDeleteUserId(user.id)}
+                          >
+                            <Trash2 className="mr-2 h-4 w-4" />
+                            Delete
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        </div>
+      </div>
 
       <AlertDialog open={!!deleteUserId} onOpenChange={() => setDeleteUserId(null)}>
-        <AlertDialogContent>
+        <AlertDialogContent className="max-w-[90vw] sm:max-w-md">
           <AlertDialogHeader>
             <AlertDialogTitle>Are you sure?</AlertDialogTitle>
             <AlertDialogDescription>
@@ -191,7 +220,7 @@ export function UserTable() {
               and all their entries.
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter>
+          <AlertDialogFooter className="flex-col sm:flex-row gap-2">
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction
               onClick={() => deleteUserId && deleteUser(deleteUserId)}

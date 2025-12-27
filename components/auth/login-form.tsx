@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { useRouter } from "next/navigation"
+import { useRouter } from "@/navigation"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { loginSchema, type LoginInput } from "@/lib/validations"
@@ -16,8 +16,10 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { useToast } from "@/hooks/use-toast"
+import { useTranslations } from 'next-intl'
 
 export function LoginForm() {
+  const t = useTranslations()
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
   const { toast } = useToast()
@@ -44,7 +46,7 @@ export function LoginForm() {
       const result = await response.json()
 
       if (!response.ok) {
-        throw new Error(result.error || "Login failed")
+        throw new Error(result.error || t('auth.loginError'))
       }
 
       // Save token to localStorage
@@ -52,8 +54,8 @@ export function LoginForm() {
       localStorage.setItem("user", JSON.stringify(result.user))
 
       toast({
-        title: "Success",
-        description: "Logged in successfully",
+        title: t('common.success'),
+        description: t('auth.loginSuccess'),
       })
 
       // Redirect based on role
@@ -64,8 +66,8 @@ export function LoginForm() {
       }
     } catch (error: any) {
       toast({
-        title: "Error",
-        description: error.message || "Failed to login",
+        title: t('common.error'),
+        description: error.message || t('auth.loginError'),
         variant: "destructive",
       })
     } finally {
@@ -81,11 +83,11 @@ export function LoginForm() {
           name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Email</FormLabel>
+              <FormLabel>{t('auth.email')}</FormLabel>
               <FormControl>
                 <Input
                   type="email"
-                  placeholder="your.email@example.com"
+                  placeholder={t('auth.emailPlaceholder')}
                   {...field}
                 />
               </FormControl>
@@ -98,19 +100,18 @@ export function LoginForm() {
           name="password"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Password</FormLabel>
+              <FormLabel>{t('auth.password')}</FormLabel>
               <FormControl>
-                <Input type="password" placeholder="••••••••" {...field} />
+                <Input type="password" placeholder={t('auth.passwordPlaceholder')} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
         <Button type="submit" className="w-full" disabled={isLoading}>
-          {isLoading ? "Logging in..." : "Login"}
+          {isLoading ? t('auth.loggingIn') : t('auth.login')}
         </Button>
       </form>
     </Form>
   )
 }
-

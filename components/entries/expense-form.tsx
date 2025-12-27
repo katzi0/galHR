@@ -25,12 +25,14 @@ import { CalendarIcon, Upload } from "lucide-react"
 import { format } from "date-fns"
 import { cn } from "@/lib/utils"
 import { useToast } from "@/hooks/use-toast"
+import { useTranslations } from 'next-intl'
 
 interface ExpenseFormProps {
   onSuccess?: () => void
 }
 
 export function ExpenseForm({ onSuccess }: ExpenseFormProps) {
+  const t = useTranslations()
   const [isLoading, setIsLoading] = useState(false)
   const [isUploading, setIsUploading] = useState(false)
   const [receiptFile, setReceiptFile] = useState<File | null>(null)
@@ -67,7 +69,7 @@ export function ExpenseForm({ onSuccess }: ExpenseFormProps) {
     const result = await response.json()
 
     if (!response.ok) {
-      throw new Error(result.error || "Failed to upload file")
+      throw new Error(result.error || t('forms.uploadError'))
     }
 
     return result.url
@@ -108,7 +110,7 @@ export function ExpenseForm({ onSuccess }: ExpenseFormProps) {
       }
 
       toast({
-        title: "Success",
+        title: t('common.success'),
         description: "Expense submitted successfully",
       })
 
@@ -117,7 +119,7 @@ export function ExpenseForm({ onSuccess }: ExpenseFormProps) {
       onSuccess?.()
     } catch (error: any) {
       toast({
-        title: "Error",
+        title: t('common.error'),
         description: error.message || "Failed to submit expense",
         variant: "destructive",
       })
@@ -129,13 +131,13 @@ export function ExpenseForm({ onSuccess }: ExpenseFormProps) {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 sm:space-y-6">
         <FormField
           control={form.control}
           name="date"
           render={({ field }) => (
             <FormItem className="flex flex-col">
-              <FormLabel>Date</FormLabel>
+              <FormLabel>{t('expenses.date')}</FormLabel>
               <Popover>
                 <PopoverTrigger asChild>
                   <FormControl>
@@ -176,12 +178,12 @@ export function ExpenseForm({ onSuccess }: ExpenseFormProps) {
           name="expenseAmount"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Amount</FormLabel>
+              <FormLabel>{t('expenses.amount')}</FormLabel>
               <FormControl>
                 <Input
                   type="number"
                   step="0.01"
-                  placeholder="100.00"
+                  placeholder={t('expenses.amountPlaceholder')}
                   {...field}
                   onChange={(e) => field.onChange(parseFloat(e.target.value))}
                 />
@@ -195,16 +197,16 @@ export function ExpenseForm({ onSuccess }: ExpenseFormProps) {
           name="expenseCategory"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Category</FormLabel>
+              <FormLabel>{t('expenses.category')}</FormLabel>
               <FormControl>
-                <Input placeholder="Travel, Office Supplies, etc." {...field} />
+                <Input placeholder={t('expenses.categoryPlaceholder')} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
         <div className="space-y-2">
-          <FormLabel>Receipt (Optional)</FormLabel>
+          <FormLabel>{t('expenses.receipt')} (Optional)</FormLabel>
           <div className="flex items-center gap-2">
             <Input
               type="file"
@@ -228,10 +230,10 @@ export function ExpenseForm({ onSuccess }: ExpenseFormProps) {
           name="description"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Description (Optional)</FormLabel>
+              <FormLabel>{t('expenses.description')} (Optional)</FormLabel>
               <FormControl>
                 <Textarea
-                  placeholder="Describe the expense..."
+                  placeholder={t('expenses.descriptionPlaceholder')}
                   {...field}
                 />
               </FormControl>
@@ -240,10 +242,9 @@ export function ExpenseForm({ onSuccess }: ExpenseFormProps) {
           )}
         />
         <Button type="submit" className="w-full" disabled={isLoading || isUploading}>
-          {isUploading ? "Uploading receipt..." : isLoading ? "Submitting..." : "Submit Expense"}
+          {isUploading ? t('common.loading') : isLoading ? t('common.loading') : t('common.submit')}
         </Button>
       </form>
     </Form>
   )
 }
-

@@ -17,6 +17,13 @@ A complete HR Management System built with Next.js 14, TypeScript, Prisma, and s
 - **Statistics Dashboard**: View system-wide statistics and metrics
 - **Comprehensive Reports**: Access detailed reports on hours, expenses, and more
 
+### Demo Mode 🎭
+- **Instant Demo**: Toggle demo mode to showcase the app with realistic mock data
+- **No Setup Required**: Try all features without database configuration
+- **Full Functionality**: Explore admin and user dashboards with sample data
+- **Perfect for Presentations**: Show the system's capabilities immediately
+- See [DEMO_MODE.md](./DEMO_MODE.md) for detailed documentation
+
 ## Tech Stack
 
 - **Framework**: Next.js 14 with App Router
@@ -29,6 +36,28 @@ A complete HR Management System built with Next.js 14, TypeScript, Prisma, and s
 - **Styling**: Tailwind CSS
 
 ## Getting Started
+
+### Quick Demo (No Setup Required)
+
+Want to try the app immediately? Use **Demo Mode**:
+
+1. Clone the repository and install dependencies
+   ```bash
+   git clone <repository-url>
+   cd galHR
+   npm install
+   npm run dev
+   ```
+
+2. Open [http://localhost:3000](http://localhost:3000)
+
+3. Toggle **Demo Mode** in the navbar (top right)
+
+4. Login with any credentials to explore the full admin dashboard with mock data
+
+See [DEMO_MODE.md](./DEMO_MODE.md) for complete demo mode documentation.
+
+### Full Setup (With Database)
 
 ### Prerequisites
 
