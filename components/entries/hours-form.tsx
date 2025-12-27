@@ -29,9 +29,10 @@ import { useTranslations } from 'next-intl'
 
 interface HoursFormProps {
   onSuccess?: () => void
+  defaultDate?: Date
 }
 
-export function HoursForm({ onSuccess }: HoursFormProps) {
+export function HoursForm({ onSuccess, defaultDate }: HoursFormProps) {
   const t = useTranslations()
   const [isLoading, setIsLoading] = useState(false)
   const { toast } = useToast()
@@ -39,7 +40,7 @@ export function HoursForm({ onSuccess }: HoursFormProps) {
   const form = useForm<HoursEntryInput>({
     resolver: zodResolver(hoursEntrySchema),
     defaultValues: {
-      date: new Date(),
+      date: defaultDate || new Date(),
       hoursWorked: 0,
       description: "",
     },

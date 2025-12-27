@@ -28,16 +28,17 @@ import { useToast } from "@/hooks/use-toast"
 
 interface TravelFormProps {
   onSuccess?: () => void
+  defaultDate?: Date
 }
 
-export function TravelForm({ onSuccess }: TravelFormProps) {
+export function TravelForm({ onSuccess, defaultDate }: TravelFormProps) {
   const [isLoading, setIsLoading] = useState(false)
   const { toast } = useToast()
 
   const form = useForm<TravelEntryInput>({
     resolver: zodResolver(travelEntrySchema),
     defaultValues: {
-      travelDate: new Date(),
+      travelDate: defaultDate || new Date(),
       travelFrom: "",
       travelTo: "",
       travelKm: 0,

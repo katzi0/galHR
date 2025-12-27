@@ -29,9 +29,10 @@ import { useTranslations } from 'next-intl'
 
 interface ExpenseFormProps {
   onSuccess?: () => void
+  defaultDate?: Date
 }
 
-export function ExpenseForm({ onSuccess }: ExpenseFormProps) {
+export function ExpenseForm({ onSuccess, defaultDate }: ExpenseFormProps) {
   const t = useTranslations()
   const [isLoading, setIsLoading] = useState(false)
   const [isUploading, setIsUploading] = useState(false)
@@ -41,7 +42,7 @@ export function ExpenseForm({ onSuccess }: ExpenseFormProps) {
   const form = useForm<ExpenseEntryInput>({
     resolver: zodResolver(expenseEntrySchema),
     defaultValues: {
-      date: new Date(),
+      date: defaultDate || new Date(),
       expenseAmount: 0,
       expenseCategory: "",
       description: "",

@@ -197,6 +197,26 @@
     "english": "אנגלית",
     "hebrew": "עברית",
     "selectLanguage": "בחר שפה"
+  },
+  "timesheet": {
+    "title": "דוח שעות",
+    "monthlyView": "תצוגה חודשית",
+    "weeklyView": "תצוגה שבועית",
+    "addEntry": "הוסף רישום",
+    "selectDate": "בחר תאריך",
+    "noEntriesForDate": "אין רישומים",
+    "weekOf": "שבוע של",
+    "totalHours": "סה״כ שעות",
+    "totalExpenses": "סה״כ הוצאות",
+    "clickDateToAdd": "לחץ על תאריך להוספת רישום",
+    "viewingMonth": "צפייה בחודש",
+    "viewingWeek": "צפייה בשבוע",
+    "switchToMonthly": "עבור לתצוגה חודשית",
+    "switchToWeekly": "עבור לתצוגה שבועית",
+    "summary": "סיכום",
+    "thisMonth": "החודש",
+    "thisWeek": "השבוע",
+    "pendingApprovals": "ממתין לאישור"
   }
 }
 

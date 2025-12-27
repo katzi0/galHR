@@ -197,6 +197,26 @@
     "english": "English",
     "hebrew": "Hebrew",
     "selectLanguage": "Select Language"
+  },
+  "timesheet": {
+    "title": "Timesheet",
+    "monthlyView": "Monthly View",
+    "weeklyView": "Weekly View",
+    "addEntry": "Add Entry",
+    "selectDate": "Select a Date",
+    "noEntriesForDate": "No entries",
+    "weekOf": "Week of",
+    "totalHours": "Total Hours",
+    "totalExpenses": "Total Expenses",
+    "clickDateToAdd": "Click on a date to add an entry",
+    "viewingMonth": "Viewing Month",
+    "viewingWeek": "Viewing Week",
+    "switchToMonthly": "Switch to Monthly",
+    "switchToWeekly": "Switch to Weekly",
+    "summary": "Summary",
+    "thisMonth": "This Month",
+    "thisWeek": "This Week",
+    "pendingApprovals": "Pending Approvals"
   }
 }
 

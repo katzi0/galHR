@@ -20,11 +20,14 @@ export function generateStaticParams() {
 
 export default async function RootLayout({
   children,
-  params: { locale }
+  params
 }: {
   children: React.ReactNode
   params: { locale: string }
 }) {
+  // Await params in Next.js 15+
+  const { locale } = await Promise.resolve(params);
+  
   // Validate locale
   if (!locales.includes(locale as any)) {
     notFound();
@@ -38,8 +41,8 @@ export default async function RootLayout({
   const dir = locale === 'he' ? 'rtl' : 'ltr';
 
   return (
-    <html lang={locale} dir={dir}>
-      <body className={inter.className}>
+    <html lang={locale} dir={dir} suppressHydrationWarning>
+      <body className={inter.className} suppressHydrationWarning>
         <NextIntlClientProvider messages={messages}>
           {children}
           <Toaster />

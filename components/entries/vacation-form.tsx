@@ -28,17 +28,18 @@ import { useToast } from "@/hooks/use-toast"
 
 interface VacationFormProps {
   onSuccess?: () => void
+  defaultStartDate?: Date
 }
 
-export function VacationForm({ onSuccess }: VacationFormProps) {
+export function VacationForm({ onSuccess, defaultStartDate }: VacationFormProps) {
   const [isLoading, setIsLoading] = useState(false)
   const { toast } = useToast()
 
   const form = useForm<VacationEntryInput>({
     resolver: zodResolver(vacationEntrySchema),
     defaultValues: {
-      startDate: new Date(),
-      endDate: new Date(),
+      startDate: defaultStartDate || new Date(),
+      endDate: defaultStartDate || new Date(),
       vacationDays: 1,
       description: "",
     },
