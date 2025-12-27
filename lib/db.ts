@@ -37,7 +37,7 @@ function createPrismaClient() {
         db: {
           url: accelerateUrl
         }
-      },
+      } as any,
       log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
     })
   }
